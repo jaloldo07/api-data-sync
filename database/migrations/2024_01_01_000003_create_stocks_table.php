@@ -15,12 +15,12 @@ class CreateStocksTable extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->json('data'); // API dan kelgan barcha ma'lumotlarni JSON formatda saqlaymiz
-            $table->date('stock_date')->nullable(); // Ombor sanasi (faqat bugungi kun uchun)
-            $table->string('external_id')->nullable()->index(); // API dagi ID
+            $table->json('data'); // Все данные из API в формате JSON
+            $table->date('stock_date')->nullable(); // Дата склада (только текущий день)
+            $table->string('external_id')->nullable()->index(); // ID из API
             $table->timestamps();
             
-            // Dublikat ma'lumotlarni oldini olish uchun
+            // Уникальный индекс для предотвращения дубликатов
             $table->unique(['external_id', 'stock_date']);
         });
     }

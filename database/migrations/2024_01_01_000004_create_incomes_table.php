@@ -15,12 +15,12 @@ class CreateIncomesTable extends Migration
     {
         Schema::create('incomes', function (Blueprint $table) {
             $table->id();
-            $table->json('data'); // API dan kelgan barcha ma'lumotlarni JSON formatda saqlaymiz
-            $table->date('income_date')->nullable(); // Daromad sanasi
-            $table->string('external_id')->nullable()->index(); // API dagi ID
+            $table->json('data'); // Все данные из API в формате JSON
+            $table->date('income_date')->nullable(); // Дата дохода
+            $table->string('external_id')->nullable()->index(); // ID из API
             $table->timestamps();
             
-            // Dublikat ma'lumotlarni oldini olish uchun
+            // Уникальный индекс для предотвращения дубликатов
             $table->unique(['external_id', 'income_date']);
         });
     }

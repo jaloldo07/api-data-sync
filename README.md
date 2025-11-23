@@ -1,68 +1,68 @@
-# 🚀 API Data Sync - Laravel loyihasi
+# 🚀 API Data Sync - Laravel проект
 
-Bu loyiha API dan ma'lumotlarni tortib olib MySQL bazasiga saqlaydigan Laravel dastur.
-
----
-
-## 📋 Loyiha haqida
-
-API endpointlari:
-- **Sotuvlar** (Sales): `/api/sales`
-- **Buyurtmalar** (Orders): `/api/orders`  
-- **Omborlar** (Stocks): `/api/stocks`
-- **Daromadlar** (Incomes): `/api/incomes`
-
-API manzili: `http://109.73.206.144:6969`
+Этот проект загружает данные из API и сохраняет их в MySQL базу данных.
 
 ---
 
-## 🗄️ DATABASE SOZLAMALARI
+## 📋 О проекте
 
-### Bepul MySQL Hosting
+API эндпоинты:
+- **Продажи** (Sales): `/api/sales`
+- **Заказы** (Orders): `/api/orders`  
+- **Склады** (Stocks): `/api/stocks`
+- **Доходы** (Incomes): `/api/incomes`
 
-**Xizmat:** FreeMySQLHosting.net yoki FreeSQLDatabase.com
+API адрес: `http://109.73.206.144:6969`
 
-### Database ma'lumotlari:
+---
+
+## 🗄️ НАСТРОЙКИ БАЗЫ ДАННЫХ
+
+### Бесплатный MySQL хостинг
+
+**Сервисы:** FreeMySQLHosting.net или FreeSQLDatabase.com
+
+### Данные базы данных:
 
 ```
 Host: sql12.freemysqlhosting.net
 Port: 3306
-Database nomi: sql12745123
+Database: sql12745123
 Username: sql12745123
-Password: <sizning parolingiz>
+Password: <ваш пароль>
 ```
 
-### 📊 Jadvallar ro'yxati:
+### 📊 Список таблиц:
 
-| Jadval nomi | Tavsif | Asosiy maydonlar |
-|-------------|--------|------------------|
-| `sales` | Sotuvlar ma'lumotlari | id, data, sale_date, external_id, created_at, updated_at |
-| `orders` | Buyurtmalar ma'lumotlari | id, data, order_date, external_id, created_at, updated_at |
-| `stocks` | Ombor ma'lumotlari | id, data, stock_date, external_id, created_at, updated_at |
-| `incomes` | Daromad ma'lumotlari | id, data, income_date, external_id, created_at, updated_at |
+| Название таблицы | Описание | Основные поля |
+|------------------|----------|---------------|
+| `sales` | Данные о продажах | id, data, sale_date, external_id, created_at, updated_at |
+| `orders` | Данные о заказах | id, data, order_date, external_id, created_at, updated_at |
+| `stocks` | Данные о складах | id, data, stock_date, external_id, created_at, updated_at |
+| `incomes` | Данные о доходах | id, data, income_date, external_id, created_at, updated_at |
 
-**ESLATMA:** Barcha jadvallar `data` maydonida API dan kelgan to'liq JSON ma'lumotini saqlaydi.
+**ПРИМЕЧАНИЕ:** Все таблицы хранят полные JSON данные из API в поле `data`.
 
 ---
 
-## ⚙️ O'rnatish (Setup)
+## ⚙️ Установка
 
-### 1. Loyihani yuklab olish
+### 1. Клонировать проект
 
 ```bash
-git clone <sizning-repo-url>
+git clone <ваш-repo-url>
 cd api-data-sync
 ```
 
-### 2. Composer dependencies o'rnatish
+### 2. Установить зависимости Composer
 
 ```bash
 composer install
 ```
 
-### 3. .env faylini sozlash
+### 3. Настроить .env файл
 
-`.env` faylini tahrirlang va database ma'lumotlarini kiriting:
+Отредактируйте `.env` файл и введите данные базы данных:
 
 ```env
 DB_CONNECTION=mysql
@@ -70,61 +70,61 @@ DB_HOST=sql12.freemysqlhosting.net
 DB_PORT=3306
 DB_DATABASE=sql12745123
 DB_USERNAME=sql12745123
-DB_PASSWORD=<sizning-parolingiz>
+DB_PASSWORD=<ваш-пароль>
 
 API_BASE_URL=http://109.73.206.144:6969
 API_KEY=E6kUTYrYwZq2tN4QEtyzsbEBk3ie
 ```
 
-### 4. Jadvallarni yaratish (Migration)
+### 4. Создать таблицы (Migration)
 
 ```bash
 php artisan migrate
 ```
 
-Bu buyruq database da 4 ta jadval yaratadi: `sales`, `orders`, `stocks`, `incomes`
+Эта команда создаст 4 таблицы в базе данных: `sales`, `orders`, `stocks`, `incomes`
 
 ---
 
-## 🎯 Ishlatish (Usage)
+## 🎯 Использование
 
-### API dan ma'lumotlarni yuklash
+### Загрузить данные из API
 
 ```bash
 php artisan api:sync
 ```
 
-Bu buyruq oxirgi 30 kun uchun barcha ma'lumotlarni yuklaydi.
+Эта команда загрузит все данные за последние 30 дней.
 
-### Ma'lum sana oralig'i uchun yuklash
+### Загрузить за определенный период
 
 ```bash
 php artisan api:sync --dateFrom=2024-01-01 --dateTo=2024-01-31
 ```
 
-### Nima sodir bo'ladi?
+### Что происходит?
 
-1. Command ishga tushadi
-2. API ga so'rov yuboriladi (har bir endpoint uchun)
-3. Ma'lumotlar sahifalab yuklanadi (har safar 500 ta yozuv)
-4. Har bir yozuv database ga saqlanadi
-5. Dublikatlar avtomatik yangilanadi (updateOrCreate orqali)
+1. Команда запускается
+2. Отправляются запросы к API (для каждого эндпоинта)
+3. Данные загружаются постранично (по 500 записей за раз)
+4. Каждая запись сохраняется в базу данных
+5. Дубликаты автоматически обновляются (через updateOrCreate)
 
 ---
 
-## 📁 Loyiha tuzilmasi
+## 📁 Структура проекта
 
 ```
 api-data-sync/
 ├── app/
 │   ├── Console/
 │   │   └── Commands/
-│   │       └── SyncApiData.php      # Asosiy sync command
+│   │       └── SyncApiData.php      # Основная команда синхронизации
 │   └── Models/
-│       ├── Sale.php                 # Sale modeli
-│       ├── Order.php                # Order modeli
-│       ├── Stock.php                # Stock modeli
-│       └── Income.php               # Income modeli
+│       ├── Sale.php                 # Модель продаж
+│       ├── Order.php                # Модель заказов
+│       ├── Stock.php                # Модель складов
+│       └── Income.php               # Модель доходов
 ├── database/
 │   └── migrations/
 │       ├── 2024_01_01_000001_create_sales_table.php
@@ -132,95 +132,95 @@ api-data-sync/
 │       ├── 2024_01_01_000003_create_stocks_table.php
 │       └── 2024_01_01_000004_create_incomes_table.php
 ├── config/
-│   └── database.php                 # Database konfiguratsiya
-├── .env                             # Environment sozlamalari
-└── README.md                        # Bu fayl
+│   └── database.php                 # Конфигурация БД
+├── .env                             # Настройки окружения
+└── README.md                        # Этот файл
 ```
 
 ---
 
-## 🔧 Texnik tafsilotlar
+## 🔧 Технические детали
 
-### Database jadval tuzilishi
+### Структура таблиц базы данных
 
-Har bir jadvalda quyidagi maydonlar bor:
+Каждая таблица содержит следующие поля:
 
-- **id** - Avtomatik ID (Primary Key)
-- **data** - JSON format (API dan kelgan to'liq ma'lumot)
-- **{type}_date** - Sana (masalan: sale_date, order_date)
-- **external_id** - API dagi ID (dublikatlarni oldini olish uchun)
-- **created_at** - Yaratilgan vaqt
-- **updated_at** - Yangilangan vaqt
+- **id** - Автоинкремент ID (Primary Key)
+- **data** - JSON формат (полные данные из API)
+- **{type}_date** - Дата (например: sale_date, order_date)
+- **external_id** - ID из API (для предотвращения дубликатов)
+- **created_at** - Время создания
+- **updated_at** - Время обновления
 
-### API so'rov formati
+### Формат запроса к API
 
 ```
 GET /api/sales?dateFrom=2024-01-01&dateTo=2024-01-31&page=1&limit=500&key=E6kUTYrYwZq2tN4QEtyzsbEBk3ie
 ```
 
-### Xususiyatlar
+### Особенности
 
-✅ Avtomatik pagination (sahifalash)  
-✅ Dublikatlarni oldini olish  
-✅ Xatoliklarni qayd qilish (logging)  
-✅ Timeout bilan himoyalangan so'rovlar  
-✅ JSON formatda ma'lumot saqlash  
+✅ Автоматическая пагинация  
+✅ Предотвращение дубликатов  
+✅ Логирование ошибок  
+✅ Защита от таймаутов  
+✅ Хранение данных в JSON формате  
 
 ---
 
-## 🐛 Muammolar va yechimlar
+## 🐛 Проблемы и решения
 
-### "Connection refused" xatosi
+### Ошибка "Connection refused"
 
-Database sozlamalarini tekshiring:
+Проверьте настройки базы данных:
 ```bash
 php artisan config:clear
 ```
 
-### "Too many requests" xatosi
+### Ошибка "Too many requests"
 
-Command ichida `sleep(1)` qo'shilgan, API ga ortiqcha yuklanmaslik uchun.
+В команде добавлен `sleep(1)` для снижения нагрузки на API.
 
-### Ma'lumotlar yuklanmayapti
+### Данные не загружаются
 
-1. API Key ni tekshiring (.env fayl)
-2. Internet ulanishini tekshiring
-3. API manzilini tekshiring
-
----
-
-## 📞 Yordam
-
-Agar savollar bo'lsa:
-- Issues yozing GitHub da
-- Email: <sizning-emailingiz>
+1. Проверьте API Key в .env файле
+2. Проверьте интернет-соединение
+3. Проверьте адрес API
 
 ---
 
-## 📜 Litsenziya
+## 📞 Помощь
 
-Bu test loyiha, o'quv maqsadida yaratilgan.
+Если есть вопросы:
+- Создайте Issue на GitHub
+- Email: <ваш-email>
 
 ---
 
-## 🎓 Laravel haqida qisqa ma'lumot
+## 📜 Лицензия
 
-### Asosiy tushunchalar:
+Это тестовый проект, созданный в учебных целях.
 
-1. **Migration** - Database jadvallarini yaratish/o'zgartirish
-2. **Model** - Database bilan ishlash uchun klass
-3. **Command** - Console orqali ishlaydigan dastur
-4. **Artisan** - Laravel ning CLI (command line) vositasi
+---
 
-### Foydali Artisan buyruqlari:
+## 🎓 Краткая информация о Laravel
+
+### Основные понятия:
+
+1. **Migration** - Создание/изменение таблиц базы данных
+2. **Model** - Класс для работы с базой данных
+3. **Command** - Программа, работающая через консоль
+4. **Artisan** - CLI инструмент Laravel
+
+### Полезные команды Artisan:
 
 ```bash
-php artisan migrate              # Jadvallarni yaratish
-php artisan migrate:rollback     # Oxirgi migrationni bekor qilish
-php artisan migrate:fresh        # Barcha jadvallarni qayta yaratish
-php artisan list                 # Barcha commandlarni ko'rish
+php artisan migrate              # Создать таблицы
+php artisan migrate:rollback     # Откатить последнюю миграцию
+php artisan migrate:fresh        # Пересоздать все таблицы
+php artisan list                 # Показать все команды
 ```
 
 ---
 
-**Muvaffaqiyatlar tilaymiz! 🎉**
+**Успехов! 🎉**

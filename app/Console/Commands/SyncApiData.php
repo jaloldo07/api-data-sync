@@ -13,17 +13,17 @@ use Illuminate\Support\Facades\Log;
 class SyncApiData extends Command
 {
     /**
-     * Commandaning nomi va argumentlari
+     * Имя команды и аргументы
      */
     protected $signature = 'api:sync {--dateFrom=} {--dateTo=}';
 
     /**
-     * Commandaning tavsifi
+     * Описание команды
      */
-    protected $description = 'API dan barcha ma\'lumotlarni yuklab olib bazaga saqlaydi';
+    protected $description = 'Загружает все данные из API и сохраняет в базу данных';
 
     /**
-     * API sozlamalari
+     * Настройки API
      */
     private $apiBaseUrl;
     private $apiKey;
@@ -36,68 +36,68 @@ class SyncApiData extends Command
     }
 
     /**
-     * Commandani ishga tushirish
+     * Запуск команды
      */
     public function handle()
     {
-        $this->info('🚀 API dan ma\'lumotlar yuklanmoqda...');
+        $this->info('🚀 Загрузка данных из API...');
         $this->info('');
 
-        // Sanalarni olish (agar berilmagan bo'lsa, oxirgi 30 kun)
+        // Получение дат (если не указаны, берем последние 30 дней)
         $dateFrom = $this->option('dateFrom') ?? now()->subDays(30)->format('Y-m-d');
         $dateTo = $this->option('dateTo') ?? now()->format('Y-m-d');
 
-        $this->info("📅 Sana oralig'i: {$dateFrom} dan {$dateTo} gacha");
+        $this->info("📅 Период: с {$dateFrom} по {$dateTo}");
         $this->info('');
 
-        // Har bir endpoint dan ma'lumotlarni yuklash
+        // Загрузка данных из каждого эндпоинта
         $this->syncSales($dateFrom, $dateTo);
         $this->syncOrders($dateFrom, $dateTo);
-        $this->syncStocks($dateFrom); // Faqat bugungi kun uchun
+        $this->syncStocks($dateFrom); // Только за сегодня
         $this->syncIncomes($dateFrom, $dateTo);
 
         $this->info('');
-        $this->info('✅ Barcha ma\'lumotlar muvaffaqiyatli yuklandi!');
+        $this->info('✅ Все данные успешно загружены!');
     }
 
     /**
-     * Sotuvlarni yuklash
+     * Загрузка продаж
      */
     private function syncSales($dateFrom, $dateTo)
     {
-        $this->info('📦 Sotuvlar yuklanmoqda...');
+        $this->info('📦 Загрузка продаж...');
         $this->syncEndpoint('/api/sales', Sale::class, 'sale_date', $dateFrom, $dateTo);
     }
 
     /**
-     * Buyurtmalarni yuklash
+     * Загрузка заказов
      */
     private function syncOrders($dateFrom, $dateTo)
     {
-        $this->info('📋 Buyurtmalar yuklanmoqda...');
+        $this->info('📋 Загрузка заказов...');
         $this->syncEndpoint('/api/orders', Order::class, 'order_date', $dateFrom, $dateTo);
     }
 
     /**
-     * Omborlarni yuklash
+     * Загрузка складов
      */
     private function syncStocks($dateFrom)
     {
-        $this->info('🏪 Omborlar yuklanmoqda...');
+        $this->info('🏪 Загрузка складов...');
         $this->syncEndpoint('/api/stocks', Stock::class, 'stock_date', $dateFrom, $dateFrom);
     }
 
     /**
-     * Daromadlarni yuklash
+     * Загрузка доходов
      */
     private function syncIncomes($dateFrom, $dateTo)
     {
-        $this->info('💰 Daromadlar yuklanmoqda...');
+        $this->info('💰 Загрузка доходов...');
         $this->syncEndpoint('/api/incomes', Income::class, 'income_date', $dateFrom, $dateTo);
     }
 
     /**
-     * Umumiy endpoint dan ma'lumot yuklash funksiyasi
+     * Общая функция загрузки данных из эндпоинта
      */
     private function syncEndpoint($endpoint, $modelClass, $dateField, $dateFrom, $dateTo)
     {
@@ -106,7 +106,7 @@ class SyncApiData extends Command
 
         do {
             try {
-                // API ga so'rov yuborish
+                // Отправка запроса к API
                 $url = $this->apiBaseUrl . $endpoint . '?' . http_build_query([
                     'dateFrom' => $dateFrom,
                     'dateTo' => $dateTo,
@@ -115,24 +115,24 @@ class SyncApiData extends Command
                     'key' => $this->apiKey
                 ]);
 
-                $this->line("   So'rov: sahifa {$page}...");
+                $this->line("   Запрос: страница {$page}...");
 
                 $response = Http::timeout(60)->get($url);
 
                 if (!$response->successful()) {
-                    $this->error("   ❌ Xato: API {$response->status()} xatoni qaytardi");
+                    $this->error("   ❌ Ошибка: API вернул код {$response->status()}");
                     break;
                 }
 
                 $data = $response->json();
 
-                // Ma'lumotlar mavjudligini tekshirish
+                // Проверка наличия данных
                 if (empty($data['data'])) {
-                    $this->line("   ℹ️ Sahifa {$page} da ma'lumot topilmadi");
+                    $this->line("   ℹ️ На странице {$page} данных не найдено");
                     break;
                 }
 
-                // Har bir yozuvni bazaga saqlash
+                // Сохранение каждой записи в базу данных
                 foreach ($data['data'] as $item) {
                     try {
                         $modelClass::updateOrCreate(
@@ -147,31 +147,31 @@ class SyncApiData extends Command
                         );
                         $totalRecords++;
                     } catch (\Exception $e) {
-                        Log::error("Ma'lumot saqlashda xato: " . $e->getMessage());
+                        Log::error("Ошибка сохранения данных: " . $e->getMessage());
                     }
                 }
 
-                $this->line("   ✓ Sahifa {$page}: " . count($data['data']) . " ta yozuv saqlandi");
+                $this->line("   ✓ Страница {$page}: " . count($data['data']) . " записей сохранено");
 
-                // Keyingi sahifa bormi tekshirish
+                // Проверка наличия следующей страницы
                 if (count($data['data']) < 500) {
                     break;
                 }
 
                 $page++;
                 
-                // API ga ortiqcha yuklanmaslik uchun bir oz kutib turish
+                // Небольшая задержка, чтобы не перегружать API
                 sleep(1);
 
             } catch (\Exception $e) {
-                $this->error("   ❌ Xato yuz berdi: " . $e->getMessage());
-                Log::error("API sync xatosi ({$endpoint}, sahifa {$page}): " . $e->getMessage());
+                $this->error("   ❌ Произошла ошибка: " . $e->getMessage());
+                Log::error("Ошибка синхронизации API ({$endpoint}, страница {$page}): " . $e->getMessage());
                 break;
             }
 
         } while (true);
 
-        $this->info("   📊 Jami saqlandi: {$totalRecords} ta yozuv");
+        $this->info("   📊 Всего сохранено: {$totalRecords} записей");
         $this->info('');
     }
 }

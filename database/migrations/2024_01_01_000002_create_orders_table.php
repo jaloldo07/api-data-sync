@@ -15,12 +15,12 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->json('data'); // API dan kelgan barcha ma'lumotlarni JSON formatda saqlaymiz
-            $table->date('order_date')->nullable(); // Buyurtma sanasi
-            $table->string('external_id')->nullable()->index(); // API dagi ID
+            $table->json('data'); // Все данные из API в формате JSON
+            $table->date('order_date')->nullable(); // Дата заказа
+            $table->string('external_id')->nullable()->index(); // ID из API
             $table->timestamps();
             
-            // Dublikat ma'lumotlarni oldini olish uchun
+            // Уникальный индекс для предотвращения дубликатов
             $table->unique(['external_id', 'order_date']);
         });
     }

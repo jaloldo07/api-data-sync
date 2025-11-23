@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Stock extends Model
 {
     /**
-     * Jadval nomi
+     * Имя таблицы
      */
     protected $table = 'stocks';
 
     /**
-     * To'ldirish mumkin bo'lgan maydonlar
+     * Поля, которые можно заполнять
      */
     protected $fillable = [
         'data',
@@ -21,7 +21,7 @@ class Stock extends Model
     ];
 
     /**
-     * JSON formatdagi maydonlar
+     * Поля в формате JSON
      */
     protected $casts = [
         'data' => 'array',
